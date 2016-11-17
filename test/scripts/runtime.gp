@@ -3,13 +3,13 @@ set ylabel 'time(sec)'
 set style fill solid
 set title 'perfomance comparison'
 set term png enhanced font 'Verdana,10'
-set output 'runtime.png'
+set output 'runtime1.png'
 
-plot [:][:80]'output.txt' using 2:xtic(1) with histogram title 'original', \
-'' using ($0-0.2):($2+4):2 with labels title ' ', \
+plot [:][:0.0005]'output.txt' using 2:xtic(1) with histogram title 'original', \
 '' using 3:xtic(1) with histogram title 'optimized'  , \
-'' using ($0):($3+1):3 with labels title ' ', \
 '' using 4:xtic(1) with histogram title 'B+ tree' , \
-'' using ($0+0.35):($4+3):4 with labels title ' ', \
-'' using 5:xtic(1) with histogram title 'B+ tree with bulk loading' , \
-'' using ($0+0.45):($5+5):5 with labels title ' ', \
+'' using 5:xtic(1) with histogram title 'B+ tree bulk' , \
+'' using ($0+0.1):(0.0001):2 with labels title ' ' textcolor lt 1, \
+'' using ($0+0.1):(0.00012):3 with labels title ' ' textcolor lt 2, \
+'' using ($0+0.1):(0.00014):4 with labels title ' ' textcolor lt 3, \
+'' using ($0+0.1):(0.00016):5 with labels title ' ' textcolor lt 4, \
