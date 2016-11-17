@@ -130,7 +130,7 @@ plot: all output.txt
 clean:
 	rm -f bplus.a
 	rm -f $(OBJS) $(TESTS) $(deps)
-	$(RM) $(EXEC) *.o perf.* ./test/calculate orig.txt opt.txt output.txt bptree.txt bulk.txt runtime.png
+	$(RM) $(EXEC) *.o perf.* ./test/calculate orig.txt opt.txt output.txt bptree.txt bulk.txt runtime.png BP_FILE
 
 .PHONY: all check clean
 
