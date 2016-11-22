@@ -9,12 +9,11 @@
 #if defined(BPTREE)||defined(BULK)
 #include "../include/bplus.h"
 #define BP_FILE "/tmp/bp_tree.bp"
-#define NUM 350000
-#define BULK_SIZE 20000
 #include <unistd.h>
 #endif
 
-#define DICT_FILE "./test/dictionary/new_usname.csv"
+#define DICT_FILE "./test/dictionary/1990su.txt"
+#define NUM 88800
 
 static double diff_in_second(struct timespec t1, struct timespec t2)
 {
@@ -60,71 +59,67 @@ int main(int argc, char *argv[])
 #if defined(__GNUC__) && !defined(BPTREE) && !defined(BULK)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
-
     clock_gettime(CLOCK_REALTIME, &start);
-
 #if defined(BULK)
-    char *bulk_buffer, *bulk_data[BULK_SIZE];
+    char *bulk_buffer, *bulk_data[NUM];
     // number of data in the buffer
     int bulk_data_count = 0;
 
-    bulk_buffer = (char*) malloc(BULK_SIZE * MAX_LAST_NAME_SIZE);
-    for(i=0; i < BULK_SIZE; i++) {
-        bulk_data[i] = bulk_buffer + MAX_LAST_NAME_SIZE * i;
+    bulk_buffer = (char*) malloc(NUM * MAX_LAST_NAME_SIZE);
+    for(i=0; i < NUM; i++) {
+        bulk_data[i] = bulk_buffer +MAX_LAST_NAME_SIZE*i;
     }
 #endif
     i = 0;
-    while (fgets(line, sizeof(line), fp)) {
+    int data_num_count = 0;
+  //  while (fgets(line,sizeof(line),fp)) {
+    while (data_num_count != NUM) {
+        data_num_count++;
+	fgets(line, sizeof(line), fp);
         while (line[i] != '\0')
             i++;
         line[i - 1] = '\0';
         i = 0;
 #if defined(BPTREE)
-        bp_sets(&db, line, line);
+	assert(bp_sets(&db, line, line) == BP_OK);
     }
 #elif defined(BULK)
-
         strcpy(bulk_data[bulk_data_count++],line);
 
-        if(bulk_data_count == BULK_SIZE) {
+        if(bulk_data_count == NUM) {
             bp_bulk_sets(&db,
                          bulk_data_count,
                          (const char**) bulk_data,
                          (const char**) bulk_data);
-            bulk_data_count = 0;
+           bulk_data_count = 0;
         }
     }
-    // clean the data in the buffer
-    if(bulk_data_count != 0)
-    {
-        bp_bulk_sets(&db,
-                     bulk_data_count,
-                     (const char**) bulk_data,
-                     (const char**) bulk_data);
-        bulk_data_count = 0;
-    }
+   // if(bulk_data_count !=0)
+  //  {
+    //    bp_bulk_sets(&db,bulk_data_count,(const char**) bulk_data,(const char**) bulk_data);
+//	bulk_data_count=0;
+ //   }
+
 #else
         e = append(line, e);
     }
 #endif
+    data_num_count=0;
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
-#if !defined(BULK)
     /* close file as soon as possible */
     fclose(fp);
-#endif
-
     /* the givn last name to find */
-    char input[MAX_LAST_NAME_SIZE] = "May";
+    char input[MAX_LAST_NAME_SIZE] = "AALDERINK";
 #if defined(BPTREE)||defined(BULK)
     char* foundName;
     assert(bp_gets(&db, input, &foundName) == BP_OK);
-    assert(0== strcmp(foundName, "May"));
+    assert(0== strcmp(foundName, "AALDERINK"));
     free(foundName);
 #else
     e = pHead;
-    //assert(findName(input, e) && "Did you implement findName() in " IMPL "?");
-    //assert(0 == strcmp(findName(input, e)->lastName, "zyxel"));
+    assert(findName(input, e));
+    assert(0 == strcmp(findName(input, e)->lastName, "AALDERINK"));
 #endif
 #if defined(__GNUC__) && !defined(BPTREE) && !defined(BULK)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
