@@ -94,11 +94,6 @@ int main(int argc, char *argv[])
            bulk_data_count = 0;
         }
     }
-   // if(bulk_data_count !=0)
-  //  {
-    //    bp_bulk_sets(&db,bulk_data_count,(const char**) bulk_data,(const char**) bulk_data);
-//	bulk_data_count=0;
- //   }
 
 #else
         e = append(line, e);
