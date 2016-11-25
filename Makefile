@@ -31,7 +31,7 @@ else
 	DEFINES += -DBP_USE_SNAPPY=0
 endif
 
-all: external/snappy/config.status bplus.a
+all: external/snappy/config.status bplus.a $(EXEC)
 
 external/snappy/config.status:
 	(git submodule init && git submodule update && cd external/snappy)

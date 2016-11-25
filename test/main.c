@@ -115,11 +115,11 @@ int main(int argc, char *argv[])
 #endif
 
     /* the givn last name to find */
-    char input[MAX_LAST_NAME_SIZE] = "May";
+    char input[MAX_LAST_NAME_SIZE] = "Zytaevius";
 #if defined(BPTREE)||defined(BULK)
     char* foundName;
     assert(bp_gets(&db, input, &foundName) == BP_OK);
-    assert(0== strcmp(foundName, "May"));
+    assert(0== strcmp(foundName, "Zytaevius"));
     free(foundName);
 #else
     e = pHead;
