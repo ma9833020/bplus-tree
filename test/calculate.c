@@ -12,7 +12,7 @@ int main(void)
     int i = 0;
     char append[50], find[50];
     double orig_sum_a = 0.0, orig_sum_f = 0.0, orig_a, orig_f;
-    for (i = 0; i < 100; i++) {
+    for (i = 0; i < 1; i++) {
         if (feof(fp)) {
             printf("ERROR: You need 100 datum instead of %d\n", i);
             printf("run 'make run' longer to get enough information\n\n");
@@ -33,7 +33,7 @@ int main(void)
         }
     }
     double opt_sum_a = 0.0, opt_sum_f = 0.0, opt_a, opt_f;
-    for (i = 0; i < 100; i++) {
+    for (i = 0; i < 1; i++) {
         if (feof(fp)) {
             printf("ERROR: You need 100 datum instead of %d\n", i);
             printf("run 'make run' longer to get enough information\n\n");
@@ -54,7 +54,7 @@ int main(void)
         }
     }
     double bptree_sum_a = 0.0, bptree_sum_f = 0.0, bptree_a, bptree_f;
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 1; i++) {
         if (feof(fp)) {
             printf("ERROR: You need 10 datum instead of %d\n", i);
             printf("run 'make run' longer to get enough information\n\n");
@@ -75,7 +75,7 @@ int main(void)
         }
     }
     double bulk_sum_a = 0.0, bulk_sum_f = 0.0, bulk_a, bulk_f;
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 1; i++) {
         if (feof(fp)) {
             printf("ERROR: You need 10 datum instead of %d\n", i);
             printf("run 'make run' longer to get enough information\n\n");
@@ -87,8 +87,8 @@ int main(void)
     }
     fclose(fp);
 
-    fprintf(output, "append() %lf %lf %lf %lf\n",orig_sum_a / 100.0, opt_sum_a / 100.0, bptree_sum_a/5.0, bulk_sum_a/10.0);
-    fprintf(output, "findName() %lf %lf %lf %lf", orig_sum_f / 100.0, opt_sum_f / 100.0, bptree_sum_f/5.0, bulk_sum_f/10.0);
+    fprintf(output, "append() %lf %lf %lf %lf\n",orig_sum_a / 1.0, opt_sum_a / 1.0, bptree_sum_a/1.0, bulk_sum_a/1.0);
+    fprintf(output, "findName() %lf %lf %lf %lf", orig_sum_f / 1.0, opt_sum_f / 1.0, bptree_sum_f/1.0, bulk_sum_f/1.0);
     fclose(output);
     return 0;
 }

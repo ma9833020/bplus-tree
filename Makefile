@@ -67,19 +67,19 @@ external/snappy/snappy-sinksource.o: external/snappy/snappy-sinksource.cc
 
 test/phonebook_orig: $(SRCS_common) test/phonebook_orig.c test/phonebook_orig.h
 	$(CC) $(CFLAGS_common) $(CFLAGS_orig) \
-		-DIMPL="\"phonebook_orig.h\"" -o $@ \
+		-DIMPL="\"./phonebook_orig.h\"" -o $@ \
 		$(SRCS_common) $@.c
 test/phonebook_opt: $(SRCS_common) test/phonebook_opt.c test/phonebook_opt.h
 	$(CC) $(CFLAGS_common) $(CFLAGS_opt) \
-		-DIMPL="\"phonebook_opt.h\"" -DOPT -o $@ \
+		-DIMPL="\"./phonebook_opt.h\"" -DOPT -o $@ \
 		$(SRCS_common) $@.c
 test/phonebook_bptree: $(SRCS_common) bplus.a test/phonebook_bptree.c test/phonebook_bptree.h
 	$(CXX) $(CPPFLAGS_common) $(CFLAGS_opt) \
-		-DIMPL="\"phonebook_bptree.h\"" -DBPTREE -o $@ \
+		-DIMPL="\"./phonebook_bptree.h\"" -DBPTREE -o $@ \
 		$(SRCS_common) bplus.a $(LDFLAGS)
 test/phonebook_bulk: $(SRCS_common) bplus.a test/phonebook_bptree.c test/phonebook_bptree.h
 	$(CXX) $(CPPFLAGS_common) $(CFLAGS_opt) \
-        -DIMPL="\"phonebook_bptree.h\"" -DBULK -o $@ \
+        -DIMPL="\"./phonebook_orig.h\"" -DBULK -o $@ \
         $(SRCS_common) test/phonebook_bptree.c bplus.a $(LDFLAGS)
 
 deps := $(OBJS:%.o=%.o.d)
@@ -114,10 +114,12 @@ test/%: test/%.cc bplus.a
 	$(CXX) $(CFLAGS) $(CPPFLAGS) $< -o $@ bplus.a $(LDFLAGS)
 
 cache-test: $(EXEC)
-	perf stat --repeat 100 -e cache-misses,cache-references,instructions,cycles test/phonebook_orig
-	perf stat --repeat 100 -e cache-misses,cache-references,instructions,cycles test/phonebook_opt
-	perf stat --repeat 5 -e cache-misses,cache-references,instructions,cycles test/phonebook_bptree
-	perf stat --repeat 10 -e cache-misses,cache-references,instructions,cycles test/phonebook_bulk
+	perf stat --repeat 1 -e cache-misses,cache-references,instructions,cycles test/phonebook_orig
+	perf stat --repeat 1 -e cache-misses,cache-references,instructions,cycles test/phonebook_opt
+	perf stat --repeat 1 -e cache-misses,cache-references,instructions,cycles test/phonebook_bptree
+	rm BP_FILE
+	perf stat --repeat 1 -e cache-misses,cache-references,instructions,cycles test/phonebook_bulk
+	rm BP_FILE
 
 output.txt: cache-test ./test/calculate
 	./test/calculate
