@@ -328,7 +328,11 @@ int bp__page_get(bp_db_t *t,
 
         return bp__page_load_value(t, page, res.index, value);
     } else {
+        
+	pthread_rwlock_rdlock(&t->rwlock);
         ret = bp__page_get(t, res.child, key, value);
+        pthread_rwlock_unlock(&t->rwlock);
+    
         bp__page_destroy(t, res.child);
         res.child = NULL;
         return ret;
