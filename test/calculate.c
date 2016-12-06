@@ -87,8 +87,29 @@ int main(void)
     }
     fclose(fp);
 
-    fprintf(output, "append() %lf %lf %lf %lf\n",orig_sum_a / 1.0, opt_sum_a / 1.0, bptree_sum_a/1.0, bulk_sum_a/1.0);
-    fprintf(output, "findName() %lf %lf %lf %lf", orig_sum_f / 1.0, opt_sum_f / 1.0, bptree_sum_f/1.0, bulk_sum_f/1.0);
+    fp = fopen("bptreec.txt","r");
+    if (!fp) {
+        fp = fopen("orig.txt", "r");
+        if (!fp) {
+            printf("ERROR opening input file bulk.txt\n");
+            exit(0);
+        }
+    }
+    double bptreec_sum_a = 0.0, bptreec_sum_f = 0.0, bptreec_a, bptreec_f;
+    for (i = 0; i < 1; i++) {
+        if (feof(fp)) {
+            printf("ERROR: You need 10 datum instead of %d\n", i);
+            printf("run 'make run' longer to get enough information\n\n");
+            exit(0);
+        }
+        fscanf(fp, "%s %s %lf %lf\n", append, find, &bptreec_a, &bptreec_f);
+        bptreec_sum_a += bptreec_a;
+        bptreec_sum_f += bptreec_f;
+    }
+    fclose(fp);
+
+    fprintf(output, "append() %lf %lf %lf %lf %lf\n",orig_sum_a / 1.0, opt_sum_a / 1.0, bptree_sum_a/1.0, bulk_sum_a/1.0, bptreec_a/1.0);
+    fprintf(output, "findName() %lf %lf %lf %lf %lf", orig_sum_f / 1.0, opt_sum_f / 1.0, bptree_sum_f/1.0, bulk_sum_f/1.0, bptreec_a/1.0);
     fclose(output);
     return 0;
 }
