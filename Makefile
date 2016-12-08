@@ -15,7 +15,8 @@ CFLAGS_opt  = -O0
 EXEC = test/phonebook_orig \
 test/phonebook_bptree \
 test/phonebook_opt \
-test/phonebook_bulk
+test/phonebook_bulk \
+test/server
 
 ifeq ($(MODE),release)
 	CPPFLAGS += -O3
@@ -81,6 +82,10 @@ test/phonebook_bulk: $(SRCS_common) bplus.a test/phonebook_bptree.c test/phonebo
 	$(CXX) $(CPPFLAGS_common) $(CFLAGS_opt) \
         -DIMPL="\"./phonebook_orig.h\"" -DBULK -o $@ \
         $(SRCS_common) test/phonebook_bptree.c bplus.a $(LDFLAGS)
+test/server: $(SRCS_common) bplus.a test/phonebook_bptree.c test/phonebook_bptree.h
+	$(CXX) $(CPPFLAGS_common) $(CFLAGS_opt) \
+		-DIMPL="\"./phonebook_bptree.h\"" -DBPTREE -o $@ \
+		@.c bplus.a $(LDFLAGS)
 
 deps := $(OBJS:%.o=%.o.d)
 

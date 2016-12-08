@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <time.h>
 #include <assert.h>
-#include <pthread>
+#include <pthread.h>
 #include <unistd.h>
 
 #include IMPL
@@ -21,6 +21,8 @@ bp_db_t db;
 
 #define DICT_FILE "./test/dictionary/1990su.txt"
 #define NUM 88800
+
+const char *port = "12345";
 
 int server_create()
 {
@@ -75,7 +77,7 @@ void server_request(void *arg)
             break;
         }
 
-        if((error = read(c_fd, &request, size)) == -1) {
+        if((error = read(c_fd, &request, request_size)) == -1) {
             fprintf(stderr, "read request failed\n");
             exit(EXIT_FAILURE);
         } else
