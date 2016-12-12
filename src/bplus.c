@@ -71,11 +71,11 @@ int bp_get(bp_db_t *tree, const bp_key_t* key, bp_value_t *value)
 {
     int ret;
 
-    pthread_rwlock_rdlock(&tree->rwlock);
+//    pthread_rwlock_rdlock(&tree->rwlock);
 
     ret = bp__page_get(tree, tree->head.page, key, value);
 
-    pthread_rwlock_unlock(&tree->rwlock);
+  //  pthread_rwlock_unlock(&tree->rwlock);
 
     return ret;
 }

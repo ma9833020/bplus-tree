@@ -1,0 +1,5 @@
+append() findName() 11.331851 0.000228
+append() findName() 10.721177 0.000579
+append() findName() 10.450518 0.000682
+append() findName() 10.515357 0.000200
+append() findName() 10.462527 0.000203
