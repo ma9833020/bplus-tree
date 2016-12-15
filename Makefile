@@ -6,7 +6,7 @@ CSTDFLAG = --std=c99 -pedantic -Wall -Wextra -Wno-unused-parameter
 CPPFLAGS += -fPIC -Iinclude -Iexternal/snappy
 CPPFLAGS += -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 CPPFLAGS += -D_XOPEN_SOURCE=500 -D_DARWIN_C_SOURCE
-LDFLAGS += -lpthread
+LDFLAGS += -pthread
 SRCS_common = test/main.c
 CFLAGS_common ?= -Wall -std=gnu99
 CFLAGS_orig = -O0
@@ -16,7 +16,9 @@ EXEC = test/phonebook_orig \
 test/phonebook_bptree \
 test/phonebook_opt \
 test/phonebook_bulk \
-test/phonebook_bptree_concurrent
+test/phonebook_bptree_concurrent \
+test/server \
+test/client
 
 ifeq ($(MODE),release)
 	CPPFLAGS += -O3
@@ -88,10 +90,15 @@ test/phonebook_bulk: $(SRCS_common) bplus.a test/phonebook_bptree.c test/phonebo
 	$(CXX) $(CPPFLAGS_common) $(CFLAGS_opt) \
         -DIMPL="\"./phonebook_orig.h\"" -DBULK -o $@ \
         $(SRCS_common) test/phonebook_bptree.c bplus.a $(LDFLAGS)
-test/server: $(SRCS_common) bplus.a test/phonebook_bptree.c test/phonebook_bptree.h
+
+test/server: bplus.a test/phonebook_bptree.c test/phonebook_bptree.h
 	$(CXX) $(CPPFLAGS_common) $(CFLAGS_opt) \
-		-DIMPL="\"./phonebook_bptree.h\"" -DBPTREE -o $@ \
-		@.c bplus.a $(LDFLAGS)
+		-DIMPL="\"./phonebook_bptree.h\"" -DBPTREE -o $@ $@.c\
+		bplus.a $(LDFLAGS)
+
+test/client:
+	$(CC) -o $@ $@.c
+
 
 deps := $(OBJS:%.o=%.o.d)
 

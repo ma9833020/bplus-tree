@@ -10,6 +10,8 @@
 #include <pthread.h>
 #include <unistd.h>
 
+#include "server.h"
+
 #include IMPL
 
 #if defined(BPTREE)||defined(BULK)
@@ -19,10 +21,8 @@
 bp_db_t db;
 #endif
 
-#define DICT_FILE "./test/dictionary/1990su.txt"
+#define DICT_FILE "../test/dictionary/1990su.txt"
 #define NUM 88800
-
-const char *port = "12345";
 
 int server_create()
 {
@@ -55,7 +55,7 @@ int server_create()
     return fd;
 }
 
-void server_request(void *arg)
+void *serve_request(void *arg)
 {
     int c_fd = (intptr_t) arg;
     int error;
@@ -102,10 +102,10 @@ void exec_request(char *request, char *response)
 
     char *tmp = strtok(request, " ");
 
-    if(strtmp(tmp, "FIND") == 0) {
+    if(strcmp(tmp, "FIND") == 0) {
         tmp = strtok(NULL, " ");
         if(tmp != NULL) {
-            char foundName[strlen(tmp)];
+            char *foundName = (char *)malloc(strlen(tmp));
 #if defined(BPTREE)
             bp_gets(&db, tmp, &foundName);
 #endif
@@ -116,6 +116,7 @@ void exec_request(char *request, char *response)
                 /* not found */
                 sprintf(response, "Data Not Found");
             }
+        }
     } else if(strcmp(tmp, "INSERT")) {
         tmp = strtok(NULL, " ");
 #if defined(BPTREE)
@@ -147,7 +148,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    int s_fd, c_fd;
+    intptr_t s_fd, c_fd;
     s_fd = server_create();
     pthread_t tid[MAX_CLIENT_NUM];
     int thread_num = 0;
@@ -205,18 +206,17 @@ int main(int argc, char *argv[])
         e = append(line, e);
     }
 #endif
+
     data_num_count=0;
-    clock_gettime(CLOCK_REALTIME, &end);
-    cpu_time1 = diff_in_second(start, end);
     /* close file as soon as possible */
     fclose(fp);
 
 	/* listen on port */
-    listen(s_fd, MAX_CLINET_NUM);
+    listen(s_fd, MAX_CLIENT_NUM);
 	
 	while(true) {
         struct sockaddr_storage c_addr;
-        int c_addr_len = sizeof(c_addr);
+        socklen_t c_addr_len = sizeof(c_addr);
 
         memset(&c_addr, 0, sizeof(c_addr));
 
@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
         if(c_fd > 0) {
             printf("client request\n");
             int tmp = thread_num;
-            pthread_create(&tid[tmp], NULL, (void *) &serve_request, (void *)(intptr_t) c_fd);
+            pthread_create(&tid[tmp], NULL,serve_request, (void *)c_fd);
             thread_num = (thread_num++) % MAX_CLIENT_NUM;
         }
     }
