@@ -62,7 +62,7 @@ void *serve_request(void *arg)
     size_t request_size, response_size;
 
     while(true) {
-        char *request, *response;
+        char *request, response[50];
         
         if((error = read(c_fd, &request_size, sizeof(size_t))) == -1) {
             fprintf(stderr, "read request size failed\n");
@@ -77,19 +77,21 @@ void *serve_request(void *arg)
             break;
         }
 
-        if((error = read(c_fd, &request, request_size)) == -1) {
+        if((error = read(c_fd, request, request_size)) == -1) {
             fprintf(stderr, "read request failed\n");
             exit(EXIT_FAILURE);
-        } else
+        } else {
             exec_request(request, response);
+        }
 
         response_size = sizeof(response);
+        
         if((error = write(c_fd, &response_size, sizeof(size_t))) == -1) {
             fprintf(stderr, "write response size failed\n");
             exit(EXIT_FAILURE);
         }
 
-        if((error = write(c_fd, &response, response_size)) == -1) {
+        if((error = write(c_fd, response, response_size)) == -1) {
             fprintf(stderr, "write response failed\n");
             exit(EXIT_FAILURE);
         }
@@ -98,7 +100,7 @@ void *serve_request(void *arg)
 
 void exec_request(char *request, char *response)
 {
-    response = (char *) malloc(sizeof(char) * 50);
+    memset(response, 0, sizeof(response));
 
     char *tmp = strtok(request, " ");
 
@@ -122,14 +124,14 @@ void exec_request(char *request, char *response)
 #if defined(BPTREE)
         if(tmp != NULL) {
 	        assert(bp_sets(&db, tmp, tmp) == BP_OK);
-            sprintf(response, "Insert Successfully");   
+            sprintf(response, "Insert Successfully");
         } else {
             /* request error */
             sprintf(response, "Bad Request");
         }
 #endif
     } else if(strcmp(tmp, "REMOVE")) {
-
+    
     }
 }
 
@@ -140,6 +142,8 @@ int main(int argc, char *argv[])
     char line[MAX_LAST_NAME_SIZE];
     struct timespec start, end;
     double cpu_time1, cpu_time2;
+
+    printf("build bplus tree, please wait...\n");
 
     /* check file opening */
     fp = fopen(DICT_FILE, "r");
@@ -211,6 +215,8 @@ int main(int argc, char *argv[])
     /* close file as soon as possible */
     fclose(fp);
 
+    printf("finish bplus tree building, wait for client...\n");
+
 	/* listen on port */
     listen(s_fd, MAX_CLIENT_NUM);
 	
@@ -226,7 +232,7 @@ int main(int argc, char *argv[])
         if(c_fd > 0) {
             printf("client request\n");
             int tmp = thread_num;
-            pthread_create(&tid[tmp], NULL,serve_request, (void *)c_fd);
+            pthread_create(&tid[tmp], NULL, serve_request, (void *)c_fd);
             thread_num = (thread_num++) % MAX_CLIENT_NUM;
         }
     }

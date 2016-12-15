@@ -97,8 +97,8 @@ void generate_request(int method, size_t *size, char *request)
         char *word = malloc(10);
 
         generate_word(word);
+        memset(request, 0, sizeof(request));
 
-        printf("%s\n", word);
         switch (method) {
                 case 1:                 /* FIND case */
                         *size = sprintf(request, "FIND %s", word);
@@ -110,6 +110,7 @@ void generate_request(int method, size_t *size, char *request)
                         *size = sprintf(request, "REMOVE %s", word);
                         break;
         }
+        printf("%s\n", request);
 }
 
 static inline int send_request(int sfd, size_t size, const char *request)
@@ -187,7 +188,7 @@ int handle_connect(int sfd, int run, int random)
 int main(int argc, char *argv[])
 {
         int opt, sfd;
-        int random = 1, run = 100;
+        int random = 1, run = 10;
         const char *server = "127.0.0.1", *port = "12345";
 
         while((opt = getopt(argc, argv, "hur:s:p:")) != -1) {
