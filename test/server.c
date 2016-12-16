@@ -108,9 +108,7 @@ void exec_request(char *request, char *response)
         tmp = strtok(NULL, " ");
         if(tmp != NULL) {
             char *foundName = (char *)malloc(strlen(tmp));
-#if defined(BPTREE)
             bp_gets(&db, tmp, &foundName);
-#endif
             if(strcmp(tmp, foundName) == 0) {
                 /* found */
                 sprintf(response, "Data Found");
@@ -119,9 +117,8 @@ void exec_request(char *request, char *response)
                 sprintf(response, "Data Not Found");
             }
         }
-    } else if(strcmp(tmp, "INSERT")) {
+    } else if(strcmp(tmp, "INSERT") == 0) {
         tmp = strtok(NULL, " ");
-#if defined(BPTREE)
         if(tmp != NULL) {
 	        assert(bp_sets(&db, tmp, tmp) == BP_OK);
             sprintf(response, "Insert Successfully");
@@ -129,9 +126,14 @@ void exec_request(char *request, char *response)
             /* request error */
             sprintf(response, "Bad Request");
         }
-#endif
-    } else if(strcmp(tmp, "REMOVE")) {
-    
+    } else if(strcmp(tmp, "REMOVE") == 0) {
+        tmp = strtok(NULL, " ");
+        if(tmp != NULL) {
+            assert(bp_removes(&db, tmp) == BP_OK);
+            sprintf(response, "Delete Successfully");
+        } else {
+            sprintf(response, "Bad Request");
+        }
     }
 }
 
